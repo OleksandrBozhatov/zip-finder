@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Соседние индексы</title>
+<meta name="description" content="Соседние почтовые индексы ЕС для загрузки и выгрузки. Работает офлайн.">
+<meta name="theme-color" content="#F4F2EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121416" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Индексы">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <h1>Соседние индексы</h1>
+  <button id="openBase" class="base-chip" type="button" aria-haspopup="dialog">
+    <span class="dot" aria-hidden="true"></span><span id="baseLabel">База не загружена</span>
+  </button>
+</header>
+
+<main>
+  <div class="route" role="tablist" aria-label="Точка маршрута">
+    <button role="tab" id="tabA" class="leg" aria-selected="true" aria-controls="panel" data-side="A" type="button">
+      <span class="pin" aria-hidden="true">A</span><span class="leg-text"><span class="leg-name">Загрузка</span><span class="leg-sub" id="subA">не задано</span></span>
+    </button>
+    <span class="route-line" aria-hidden="true"></span>
+    <button role="tab" id="tabB" class="leg" aria-selected="false" aria-controls="panel" data-side="B" type="button" tabindex="-1">
+      <span class="pin" aria-hidden="true">B</span><span class="leg-text"><span class="leg-name">Выгрузка</span><span class="leg-sub" id="subB">не задано</span></span>
+    </button>
+  </div>
+
+  <form id="panel" role="tabpanel" aria-labelledby="tabA" class="form" novalidate>
+    <div class="row-2">
+      <div class="field">
+        <label for="country">Страна</label>
+        <select id="country" required></select>
+      </div>
+      <div class="field">
+        <label for="zip">Индекс</label>
+        <input id="zip" class="mono" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="search" placeholder="10115" required>
+      </div>
+    </div>
+    <fieldset class="field">
+      <legend>Радиус по прямой</legend>
+      <div class="chips" id="radius">
+        <label><input type="radio" name="radius" value="10"><span>10 км</span></label>
+        <label><input type="radio" name="radius" value="20"><span>20 км</span></label>
+        <label><input type="radio" name="radius" value="30" checked><span>30 км</span></label>
+        <label><input type="radio" name="radius" value="50"><span>50 км</span></label>
+      </div>
+    </fieldset>
+    <button id="go" class="primary" type="submit">Найти соседние индексы</button>
+  </form>
+
+  <section id="results" class="results" aria-live="polite"></section>
+
+  <details class="note">
+    <summary>Как пользоваться корректно</summary>
+    <p>Результаты показывают соседние зоны и не заменяют точные адреса. В объявлениях указывай их, только когда допускается приблизительный район и это не искажает условия. До принятия заказа сообщай перевозчику точные места загрузки и выгрузки. Расстояние по дороге может заметно отличаться от расстояния по прямой.</p>
+  </details>
+  <p class="credit">Данные: <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>, лицензия CC BY 4.0.</p>
+</main>
+
+<dialog id="baseDialog" aria-labelledby="baseTitle">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2 id="baseTitle">База индексов</h2>
+      <button id="closeBase" class="ghost" type="button">Готово</button>
+    </div>
+    <p class="hint">Скачай архив страны с <a href="https://download.geonames.org/export/zip/" target="_blank" rel="noopener">download.geonames.org/export/zip</a> (например <b class="mono">DE.zip</b> или <b class="mono">allCountries.zip</b> для всех стран) и выбери его здесь. Распаковывать не нужно, подходят и .zip, и .txt. Польша и страны вне ЕС пропускаются.</p>
+    <p class="hint warn">На iPhone приложение с экрана «Домой» хранит данные отдельно от Safari. Загружай базу внутри установленного приложения.</p>
+    <label class="file">
+      <input id="files" type="file" accept=".zip,.txt,.tsv,application/zip,text/plain" multiple>
+      <span>Выбрать файлы GeoNames</span>
+    </label>
+    <div id="progress" class="progress" hidden>
+      <div class="bar"><span id="barFill"></span></div>
+      <p id="progressText" class="small"></p>
+    </div>
+    <p id="baseMsg" class="small" role="status"></p>
+    <ul id="countryList" class="clist"></ul>
+    <button id="clearAll" class="danger" type="button" hidden>Удалить всю базу</button>
+  </div>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
